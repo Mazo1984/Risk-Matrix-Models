@@ -7,88 +7,95 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
     <style>
-        /* Use Inter font */
+        /* Use Inter font for the body */
         body {
             font-family: 'Inter', sans-serif;
         }
         /* Style sliders for better appearance */
         input[type=range] {
-            -webkit-appearance: none;
+            -webkit-appearance: none; /* Override default look */
             appearance: none;
-            width: 100%;
-            height: 8px;
-            background: #d3d3d3;
-            outline: none;
-            opacity: 0.7;
-            -webkit-transition: .2s;
+            width: 100%; /* Full width */
+            height: 8px; /* Track height */
+            background: #d3d3d3; /* Track color */
+            outline: none; /* Remove outline */
+            opacity: 0.7; /* Slight transparency */
+            -webkit-transition: .2s; /* Smooth transition for hover */
             transition: opacity .2s;
             border-radius: 4px; /* Rounded track */
         }
 
+        /* Increase opacity on hover */
         input[type=range]:hover {
             opacity: 1;
         }
 
-        /* Slider thumb styling for Webkit browsers (Chrome, Safari) */
+        /* Slider thumb styling for Webkit browsers (Chrome, Safari, Edge) */
         input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
+            -webkit-appearance: none; /* Override default look */
             appearance: none;
-            width: 20px;
-            height: 20px;
-            background: #3b82f6; /* Blue color */
-            cursor: pointer;
+            width: 20px; /* Thumb width */
+            height: 20px; /* Thumb height */
+            background: #3b82f6; /* Blue color (Tailwind blue-500) */
+            cursor: pointer; /* Pointer cursor on hover */
             border-radius: 50%; /* Circular thumb */
         }
 
         /* Slider thumb styling for Firefox */
         input[type=range]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
+            width: 20px; /* Thumb width */
+            height: 20px; /* Thumb height */
             background: #3b82f6; /* Blue color */
-            cursor: pointer;
+            cursor: pointer; /* Pointer cursor on hover */
             border-radius: 50%; /* Circular thumb */
             border: none; /* Remove default border */
         }
 
-        /* Ensure plots take up reasonable space */
+        /* Ensure plots take up reasonable space and are centered */
         .plot-container {
-            height: 450px; /* Adjust height as needed */
-            width: 100%;
+            height: 450px; /* Fixed height for plots */
+            width: 100%; /* Full width of container */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        /* Ensure Plotly chart itself fills the container */
+         .plot-container .plotly {
+            width: 100% !important;
+            height: 100% !important;
         }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
-<body class="bg-gray-100 p-8">
-
-    <div class="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h1 class="text-2xl font-bold mb-4 text-center text-gray-800">Interactive Risk Model Visualization</h1>
-        <p class="mb-6 text-center text-gray-600">
+<body class="bg-gray-100 p-4 sm:p-8"> <div class="max-w-7xl mx-auto bg-white p-4 sm:p-6 rounded-lg shadow-md">
+        <h1 class="text-xl sm:text-2xl font-bold mb-4 text-center text-gray-800">Interactive Risk Model Visualization</h1>
+        <p class="mb-6 text-center text-sm sm:text-base text-gray-600">
             Explore how different mathematical formulas for combining Probability (P) and Consequence (C) implicitly add risk tolerance or aversion. Adjust the sliders to see the Risk Factor (RF) calculated by each model and where your point lies on the contour plots.
         </p>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
             <div>
                 <label for="probability" class="block text-sm font-medium text-gray-700">Probability (P): <span id="pValueLabel" class="font-semibold">0.50</span></label>
-                <input type="range" id="probability" min="0" max="1" step="0.01" value="0.5" class="mt-1 w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                <input type="range" id="probability" min="0" max="1" step="0.01" value="0.5" class="mt-1 w-full cursor-pointer">
             </div>
             <div>
                 <label for="consequence" class="block text-sm font-medium text-gray-700">Consequence (C): <span id="cValueLabel" class="font-semibold">0.50</span></label>
-                <input type="range" id="consequence" min="0" max="1" step="0.01" value="0.5" class="mt-1 w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                <input type="range" id="consequence" min="0" max="1" step="0.01" value="0.5" class="mt-1 w-full cursor-pointer">
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-center">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-8 text-center">
             <div class="p-4 bg-blue-50 rounded-lg shadow-sm border border-blue-200">
-                <h3 class="text-lg font-semibold text-blue-800">Model 1: RF = P * C</h3>
-                <p class="text-gray-700 text-sm mb-2">(Concave Contours - Risk Tolerant)</p>
-                <p class="text-2xl font-bold text-blue-600" id="rf1Value">RF = 0.25</p>
+                <h3 class="text-md sm:text-lg font-semibold text-blue-800">Model 1: RF = P * C</h3>
+                <p class="text-gray-700 text-xs sm:text-sm mb-2">(Concave Contours - Risk Tolerant)</p>
+                <p class="text-xl sm:text-2xl font-bold text-blue-600" id="rf1Value">RF = 0.25</p>
             </div>
             <div class="p-4 bg-green-50 rounded-lg shadow-sm border border-green-200">
-                <h3 class="text-lg font-semibold text-green-800">Model 2: RF = 1 - (1-P)*(1-C)</h3>
-                 <p class="text-gray-700 text-sm mb-2">(Convex Contours - Risk Averse)</p>
-                <p class="text-2xl font-bold text-green-600" id="rf2Value">RF = 0.75</p>
+                <h3 class="text-md sm:text-lg font-semibold text-green-800">Model 2: RF = 1 - (1-P)*(1-C)</h3>
+                 <p class="text-gray-700 text-xs sm:text-sm mb-2">(Convex Contours - Risk Averse)</p>
+                <p class="text-xl sm:text-2xl font-bold text-green-600" id="rf2Value">RF = 0.75</p>
             </div>
         </div>
 
@@ -97,8 +104,16 @@
             <div id="plot2" class="plot-container rounded-lg shadow border border-gray-200 overflow-hidden"></div>
         </div>
 
+         <div class="mt-8 p-4 border border-gray-200 rounded-lg bg-gray-50 text-center">
+             <h3 class="text-md font-semibold text-gray-800 mb-2">Join the Community</h3>
+             <p class="text-sm text-gray-700">
+                 Want to get access to this, and many other Risk & Resilience Sources, including interactive Tools, Resilience AI Hub, Knowledge Sharing Sessions and more, join the Resilience Engineers Community: <br>
+                 <a href="https://resilience-engineers-community.mn.co/" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline font-medium break-words"> https://resilience-engineers-community.mn.co/
+                 </a>
+             </p>
+         </div>
          <div class="mt-8 p-4 border border-gray-200 rounded-lg bg-gray-50">
-             <h2 class="text-xl font-semibold mb-3 text-gray-800">Understanding the Plots</h2>
+             <h2 class="text-lg sm:text-xl font-semibold mb-3 text-gray-800">Understanding the Plots</h2>
              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
                  <div>
                      <h3 class="font-medium text-blue-700">Plot 1 (RF = P * C): Risk Tolerance</h3>
@@ -111,10 +126,8 @@
              </div>
          </div>
 
-    </div>
-
-    <script>
-        // Get references to HTML elements
+    </div> <script>
+        // Get references to HTML elements used in the script
         const probabilitySlider = document.getElementById('probability');
         const consequenceSlider = document.getElementById('consequence');
         const pValueLabel = document.getElementById('pValueLabel');
@@ -125,138 +138,162 @@
         const plot2Div = document.getElementById('plot2');
 
         // --- Plotting Configuration ---
-        const N_POINTS = 50; // Resolution for contour plots
+        const N_POINTS = 50; // Number of points along each axis for contour plots (higher = smoother but slower)
+        // Create arrays of equally spaced values from 0 to 1 for Consequence (C) and Probability (P) axes
         const C_values = Array.from({ length: N_POINTS }, (_, i) => i / (N_POINTS - 1));
         const P_values = Array.from({ length: N_POINTS }, (_, i) => i / (N_POINTS - 1));
 
         // --- Calculate Z values (Risk Factors) for the contour plots ---
-        const z1 = []; // For RF = P * C
-        const z2 = []; // For RF = 1 - (1-P)*(1-C)
+        // These 2D arrays will hold the calculated RF for each (P, C) combination
+        const z1 = []; // For Model 1: RF = P * C
+        const z2 = []; // For Model 2: RF = 1 - (1-P)*(1-C)
 
+        // Loop through each probability value
         for (let i = 0; i < N_POINTS; i++) {
             const p = P_values[i];
-            const row1 = [];
-            const row2 = [];
+            const row1 = []; // Row for z1
+            const row2 = []; // Row for z2
+            // Loop through each consequence value for the current probability
             for (let j = 0; j < N_POINTS; j++) {
                 const c = C_values[j];
-                // Model 1: RF = P * C
+                // Calculate RF for Model 1
                 row1.push(p * c);
-                // Model 2: RF = 1 - (1-P)*(1-C)
+                // Calculate RF for Model 2
                 row2.push(1 - (1 - p) * (1 - c));
             }
+            // Add the completed rows to the Z matrices
             z1.push(row1);
             z2.push(row2);
         }
 
-        // --- Plotly Data and Layout ---
+        // --- Plotly Data and Layout Configuration ---
+
+        // Base layout configuration shared by both plots
         const contourLayoutBase = {
             xaxis: { title: 'Consequence (C)', range: [0, 1], zeroline: false, gridcolor: '#eee' },
             yaxis: { title: 'Probability (P)', range: [0, 1], zeroline: false, gridcolor: '#eee' },
-            autosize: true, // Make plot responsive
-            margin: { l: 50, r: 20, b: 50, t: 50 }, // Adjust margins
-            hovermode: 'closest' // Show hover info for nearest point
+            autosize: true, // Make plot responsive to container size changes
+            margin: { l: 50, r: 20, b: 50, t: 50, pad: 4 }, // Adjust margins for labels/title
+            hovermode: 'closest', // Show hover info for the nearest data point
+            font: { family: 'Inter, sans-serif' } // Use Inter font in plots
         };
 
+        // Base configuration for the contour traces
         const contourTraceBase = {
-            x: C_values,
-            y: P_values,
-            type: 'contour',
+            x: C_values, // Consequence values for the x-axis
+            y: P_values, // Probability values for the y-axis
+            type: 'contour', // Plot type
             contours: {
-                coloring: 'lines', // Use lines instead of fill
-                showlabels: true, // Show labels on contour lines
-                labelfont: { size: 10, color: 'black' },
+                coloring: 'lines', // Draw lines for contours, not filled areas
+                showlabels: true, // Display the RF value on each contour line
+                labelfont: { size: 10, color: 'black' }, // Font for contour labels
+                start: 0.05, // Starting value for contours
+                end: 0.95,   // Ending value for contours
+                size: 0.1   // Step between contours
             },
-            line: { width: 1.5 }, // Thinner contour lines
-            connectgaps: true, // Connect gaps in contours
-            hoverinfo: 'skip' // Don't show hover for contour lines themselves
+            line: { width: 1.5 }, // Thickness of contour lines
+            connectgaps: true, // Attempt to connect gaps in contour data
+            hoverinfo: 'skip' // Don't show default hover info for the contour lines themselves
         };
 
-         // Data for the marker showing the selected point
+         // Configuration for the marker (scatter plot point) showing the selected (P, C)
          const markerTrace = {
-            x: [0.5], // Initial C
-            y: [0.5], // Initial P
-            mode: 'markers',
-            type: 'scatter',
+            x: [0.5], // Initial Consequence value
+            y: [0.5], // Initial Probability value
+            mode: 'markers', // Display as markers
+            type: 'scatter', // Plot type
             marker: {
-                color: 'red',
-                size: 12,
-                symbol: 'x', // Use 'x' marker
-                line: { width: 2, color: 'darkred'}
+                color: 'red', // Marker color
+                size: 12,     // Marker size
+                symbol: 'x',  // Marker shape ('x')
+                line: { width: 2, color: 'darkred'} // Border for the marker
             },
-            hoverinfo: 'text', // Custom hover text
-            hovertext: '' // Will be updated dynamically
+            hoverinfo: 'text', // Use custom text for hover info
+            hovertext: ''      // Hover text will be updated dynamically by the script
          };
 
-        // --- Create Initial Plots ---
-        Plotly.newPlot(plot1Div, [{ ...contourTraceBase, z: z1, name: 'RF = P*C', line: { color: 'blue' } }, markerTrace],
-            { ...contourLayoutBase, title: 'Model 1: RF = P * C (Risk Tolerant)' } , {responsive: true}); // Add responsive config
+        // --- Create Initial Plots using Plotly.newPlot ---
+        // Plot 1: RF = P * C
+        Plotly.newPlot(plot1Div, [
+            { ...contourTraceBase, z: z1, name: 'RF = P*C', line: { color: '#3b82f6' } }, // Contour trace for Model 1 (blue)
+            { ...markerTrace } // Add the interactive marker trace
+        ],
+        { ...contourLayoutBase, title: 'Model 1: RF = P * C (Risk Tolerant)' }, // Layout specific to Plot 1
+        {responsive: true}); // Plotly config: ensure responsiveness
 
-        Plotly.newPlot(plot2Div, [{ ...contourTraceBase, z: z2, name: 'RF = 1-(1-P)(1-C)', line: { color: 'green' } }, markerTrace],
-            { ...contourLayoutBase, title: 'Model 2: RF = 1-(1-P)(1-C) (Risk Averse)' }, {responsive: true}); // Add responsive config
+        // Plot 2: RF = 1 - (1-P)*(1-C)
+        Plotly.newPlot(plot2Div, [
+            { ...contourTraceBase, z: z2, name: 'RF = 1-(1-P)(1-C)', line: { color: '#10b981' } }, // Contour trace for Model 2 (green)
+            { ...markerTrace } // Add the interactive marker trace
+        ],
+        { ...contourLayoutBase, title: 'Model 2: RF = 1-(1-P)(1-C) (Risk Averse)' }, // Layout specific to Plot 2
+        {responsive: true}); // Plotly config: ensure responsiveness
 
         // --- Update Function ---
+        // This function is called whenever a slider value changes or a plot is clicked
         function updateVisualization() {
+            // Get current values from sliders (convert string to float)
             const p = parseFloat(probabilitySlider.value);
             const c = parseFloat(consequenceSlider.value);
 
-            // Update labels
-            pValueLabel.textContent = p.toFixed(2);
+            // Update the text labels next to the sliders
+            pValueLabel.textContent = p.toFixed(2); // Format to 2 decimal places
             cValueLabel.textContent = c.toFixed(2);
 
-            // Calculate Risk Factors
+            // Calculate the Risk Factors based on current P and C
             const rf1 = p * c;
             const rf2 = 1 - (1 - p) * (1 - c);
 
-            // Update RF displays
-            rf1ValueDisplay.textContent = `RF = ${rf1.toFixed(3)}`;
+            // Update the displayed RF values
+            rf1ValueDisplay.textContent = `RF = ${rf1.toFixed(3)}`; // Format to 3 decimal places
             rf2ValueDisplay.textContent = `RF = ${rf2.toFixed(3)}`;
 
-            // Update marker position and hover text on both plots
+            // Update the marker position and its hover text on both plots
             const hoverText = `P=${p.toFixed(2)}, C=${c.toFixed(2)}<br>RF1=${rf1.toFixed(3)}<br>RF2=${rf2.toFixed(3)}`;
-            const updateData = { x: [[c]], y: [[p]], hovertext: [[hoverText]] }; // Note the double brackets for updating single point
+            // Data structure for updating the marker trace (index 1 in the data array)
+            // Note the double brackets [[value]] needed by Plotly.restyle for single points
+            const updateData = { x: [[c]], y: [[p]], hovertext: [[hoverText]] };
 
-            // Update only the marker trace (index 1) in each plot
+            // Use Plotly.restyle to efficiently update only the marker trace (index 1)
             Plotly.restyle(plot1Div, updateData, [1]);
             Plotly.restyle(plot2Div, updateData, [1]);
         }
 
         // --- Event Listeners ---
+        // Update visualization when either slider's value changes
         probabilitySlider.addEventListener('input', updateVisualization);
         consequenceSlider.addEventListener('input', updateVisualization);
 
-        // Add click listeners to plots to update sliders
-        plot1Div.on('plotly_click', (data) => {
+        // Function to handle clicks on the plots
+        function handlePlotClick(data) {
              if (data.points.length > 0) {
                 const point = data.points[0];
-                // Find the closest grid point (or use direct click coords if preferred)
+                // Get the clicked coordinates (may not be exactly on the grid)
                 const c = point.x;
                 const p = point.y;
 
-                // Update sliders (clamp values just in case)
+                // Update sliders to the clicked coordinates
+                // Clamp values between 0 and 1 just in case the click is slightly outside the axes
                 probabilitySlider.value = Math.max(0, Math.min(1, p));
                 consequenceSlider.value = Math.max(0, Math.min(1, c));
 
-                // Trigger update
+                // Trigger the update function to recalculate RF and move the marker
                 updateVisualization();
             }
-        });
-         plot2Div.on('plotly_click', (data) => {
-             if (data.points.length > 0) {
-                const point = data.points[0];
-                const c = point.x;
-                const p = point.y;
-                probabilitySlider.value = Math.max(0, Math.min(1, p));
-                consequenceSlider.value = Math.max(0, Math.min(1, c));
-                updateVisualization();
-            }
-        });
+        }
+
+        // Add click listeners to both plots
+        plot1Div.on('plotly_click', handlePlotClick);
+        plot2Div.on('plotly_click', handlePlotClick);
 
 
-        // --- Initial Calculation ---
+        // --- Initial Calculation & Setup ---
+        // Run the update function once on page load to set initial values and marker position
         updateVisualization();
 
-        // Optional: Handle window resize to ensure plots redraw correctly
+        // Optional: Handle window resize to ensure plots redraw correctly if the container size changes
         window.addEventListener('resize', () => {
+             // Use Plotly's resize method for each plot container
              Plotly.Plots.resize(plot1Div);
              Plotly.Plots.resize(plot2Div);
         });
